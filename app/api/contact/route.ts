@@ -42,26 +42,38 @@ async function analyzeIntent(message: string): Promise<string> {
 // Step 2: Generate confirmation email with timeout
 async function generateConfirmationEmail(state: ContactState): Promise<{ subject: string; html: string }> {
   try {
-    const prompt = `You are assisting a just graduated from Computer Science student in crafting a confirmation email to someone who contacted them through their personal website. Your task is to create a warm, professional confirmation email that acknowledges their message and sets the right tone for future communication.
+    const prompt = `You are assisting a Computer Science graduate in crafting a response email. Create a brief, personalized email based on the intent (${state.intent}):
 
-PERSONAL INFORMATION:
-- Name: Luis Guillen
-- Email: luigi@guiar.com.mx
-- Phone: +1 (817) 6594871
-- LinkedIn: www.linkedin.com/in/luis-guillen-arc
-- GitHub: https://github.com/Lu1gi21
+JOB OPPORTUNITY:
+- Express brief interest in the role
+- Reference something specific from their message
+- Suggest a meeting to discuss details
+- Subject: "Re: [Job Title/Company] Opportunity"
 
-INSTRUCTIONS:
-1. Create a confirmation email that acknowledges receipt of their message
-2. Include the AI-generated response to their inquiry
-3. Maintain a friendly yet professional tone
-4. Keep it concise but warm
-5. Include appropriate greetings and sign-offs
-6. Make it feel personal and not automated
-7. If it's a job opportunity, express enthusiasm while maintaining professionalism
-8. If it's a collaboration request, show interest in learning more
-9. If it's a question, acknowledge their interest in your work
-10. Generate a subject line that is relevant to their inquiry
+COLLABORATION:
+- Show interest in their project/idea
+- Reference something specific from their proposal
+- Suggest a meeting to explore collaboration
+- Subject: "Re: Collaboration on [Project/Idea]"
+
+QUESTION:
+- Acknowledge their specific question
+- Show appreciation for their interest
+- Suggest a meeting to provide a detailed response
+- Subject: "Re: [Topic] Question"
+
+OTHER:
+- Acknowledge their message briefly
+- Reference something specific from their message
+- Suggest a meeting to discuss further
+- Subject: "Re: [Topic]"
+
+GENERAL RULES:
+- Keep it brief and direct
+- Include contact info for scheduling
+- Professional but friendly tone
+- Let them choose meeting time
+- Make it personal by referencing their message
 
 From: ${state.name}
 Email: ${state.email}
