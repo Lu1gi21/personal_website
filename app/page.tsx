@@ -29,10 +29,12 @@ export default function Home() {
               Contact
             </Link>
           </nav>
-          <Button>
-            Resume
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link href="/luisguillen-resume.pdf" target="_blank" rel="noopener noreferrer">
+            <Button>
+              Resume
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </header>
       <main className="flex-1">
