@@ -4,7 +4,8 @@ import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
 import { Github, Linkedin, Mail, ExternalLink, ArrowRight, Phone } from "lucide-react"
 import { ContactForm } from "../components/contact-form"
-import { ResponsiveContent } from "../components/responsive-content"
+import { ResponsiveSkills } from "../components/responsive-content"
+import { ResponsiveProjects } from "../components/responsive-content"
 
 export default function Home() {
   return (
@@ -142,7 +143,7 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold">My Expertise</h2>
               <p className="text-muted-foreground">Here are the technologies and tools I work with.</p>
             </div>
-            <ResponsiveContent />
+            <ResponsiveSkills />
           </div>
         </section>
 
@@ -156,7 +157,7 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold">My Work</h2>
               <p className="text-muted-foreground">Check out some of my recent projects.</p>
             </div>
-            <ResponsiveContent />
+            <ResponsiveProjects />
           </div>
         </section>
 
