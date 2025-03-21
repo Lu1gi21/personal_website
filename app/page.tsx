@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "../components/ui/button"
 import { Card, CardContent } from "../components/ui/card"
@@ -6,7 +6,68 @@ import { Badge } from "../components/ui/badge"
 import { Github, Linkedin, Mail, ExternalLink, ArrowRight, Phone } from "lucide-react"
 import { ContactForm } from "../components/contact-form"
 
+// Custom hook for window size
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+}
+
 export default function Home() {
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+
+  const projects = [
+    {
+      title: "Chronologic",
+      description: "A consumer-focused AI agent system that seamlessly connects all your applications, helping users establish routines and complete tasks efficiently. Features include unified interface management, intelligent task scheduling, and automated workflow optimization.",
+      tech: ["Python", "AI/ML", "API Integration", "Agent Systems", "Next.js", "TypeScript"],
+      image: "/images/projects/chronologic.png",
+      order: 2,
+      mobileOrder: 1,
+      mobileTech: ["Python", "AI/ML", "Next.js"],
+    },
+    {
+      title: "Code Generation & Review System",
+      description: "A web application built for Hacklahoma 2025 using React frontend and Python/LangGraph backend. Features an AI-powered code generation system with parallel execution of coding and testing tasks, supervised by intelligent agents for continuous code quality improvement.",
+      tech: ["Python", "React", "LangGraph", "FastAPI", "TypeScript"],
+      image: "/images/projects/codeReview.webp",
+      order: 1,
+      mobileOrder: 2,
+      mobileTech: ["Python", "React", "LangGraph"],
+    },
+    {
+      title: "AI-Powered Email Response System",
+      description: "An intelligent email response system that uses AI to analyze message intent and generate personalized responses. Features include intent analysis, automated email generation, and seamless integration with email services.",
+      tech: ["Next.js", "TypeScript", "AI/ML", "Email Integration"],
+      image: "/images/projects/email-bot.webp",
+      order: 3,
+      mobileOrder: 3,
+      mobileTech: ["Next.js", "AI/ML", "Email Integration"],
+    },
+  ];
+
+  const sortedProjects = [...projects].sort((a, b) => {
+    return isMobile ? a.mobileOrder - b.mobileOrder : a.order - b.order;
+  });
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -144,23 +205,106 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[
-                { name: "Python", level: "Advanced", category: "Programming" },
-                { name: "R", level: "Advanced", category: "Programming" },
-                { name: "C++", level: "Advanced", category: "Programming" },
-                { name: "Java", level: "Advanced", category: "Programming" },
-                { name: "Agile", level: "Advanced", category: "Methodology" },
-                { name: "SCRUM", level: "Advanced", category: "Methodology" },
-                { name: "Machine Learning", level: "Advanced", category: "AI/ML" },
-                { name: "Agentic Frameworks", level: "Advanced", category: "AI/ML" },
-                { name: "Computer Security", level: "Advanced", category: "Security" },
-                { name: "Network Security", level: "Advanced", category: "Security" },
-                { name: "Data Analysis", level: "Advanced", category: "Data Science" },
-                { name: "Problem Solving", level: "Advanced", category: "Core Skills" },
-                { name: "React", level: "Advanced", category: "Web Development" },
-                { name: "Next.js", level: "Advanced", category: "Web Development" },
-                { name: "TypeScript", level: "Advanced", category: "Web Development" },
-                { name: "Tailwind CSS", level: "Advanced", category: "Web Development" },
-              ].map((skill, index) => (
+                { 
+                  name: "Python", 
+                  level: "Advanced", 
+                  category: "Programming",
+                  mobileOrder: 1 
+                },
+                { 
+                  name: "R", 
+                  level: "Advanced", 
+                  category: "Programming",
+                  mobileOrder: 2 
+                },
+                { 
+                  name: "C++", 
+                  level: "Advanced", 
+                  category: "Programming",
+                  mobileOrder: 3 
+                },
+                { 
+                  name: "Java", 
+                  level: "Advanced", 
+                  category: "Programming",
+                  mobileOrder: 4 
+                },
+                { 
+                  name: "Agile", 
+                  level: "Advanced", 
+                  category: "Methodology",
+                  mobileOrder: 5 
+                },
+                { 
+                  name: "SCRUM", 
+                  level: "Advanced", 
+                  category: "Methodology",
+                  mobileOrder: 6 
+                },
+                { 
+                  name: "Machine Learning", 
+                  level: "Advanced", 
+                  category: "AI/ML",
+                  mobileOrder: 7 
+                },
+                { 
+                  name: "Agentic Frameworks", 
+                  level: "Advanced", 
+                  category: "AI/ML",
+                  mobileOrder: 8 
+                },
+                { 
+                  name: "Computer Security", 
+                  level: "Advanced", 
+                  category: "Security",
+                  mobileOrder: 9 
+                },
+                { 
+                  name: "Network Security", 
+                  level: "Advanced", 
+                  category: "Security",
+                  mobileOrder: 10 
+                },
+                { 
+                  name: "Data Analysis", 
+                  level: "Advanced", 
+                  category: "Data Science",
+                  mobileOrder: 11 
+                },
+                { 
+                  name: "Problem Solving", 
+                  level: "Advanced", 
+                  category: "Core Skills",
+                  mobileOrder: 12 
+                },
+                { 
+                  name: "React", 
+                  level: "Advanced", 
+                  category: "Web Development",
+                  mobileOrder: 13 
+                },
+                { 
+                  name: "Next.js", 
+                  level: "Advanced", 
+                  category: "Web Development",
+                  mobileOrder: 14 
+                },
+                { 
+                  name: "TypeScript", 
+                  level: "Advanced", 
+                  category: "Web Development",
+                  mobileOrder: 15 
+                },
+                { 
+                  name: "Tailwind CSS", 
+                  level: "Advanced", 
+                  category: "Web Development",
+                  mobileOrder: 16 
+                },
+              ]
+              .filter(skill => isMobile ? skill.mobileOrder <= 8 : true) // Show only first 8 skills on mobile
+              .sort((a, b) => isMobile ? a.mobileOrder - b.mobileOrder : 0)
+              .map((skill, index) => (
                 <Card 
                   key={index} 
                   className="overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer group"
@@ -191,26 +335,7 @@ export default function Home() {
               <p className="text-muted-foreground">Check out some of my recent projects.</p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  title: "Code Generation & Review System",
-                  description: "A web application built for Hacklahoma 2025 using React frontend and Python/LangGraph backend. Features an AI-powered code generation system with parallel execution of coding and testing tasks, supervised by intelligent agents for continuous code quality improvement.",
-                  tech: ["Python", "React", "LangGraph", "FastAPI", "TypeScript"],
-                  image: "/images/projects/codeReview.webp",
-                },
-                {
-                  title: "Chronologic",
-                  description: "A consumer-focused AI agent system that seamlessly connects all your applications, helping users establish routines and complete tasks efficiently. Features include unified interface management, intelligent task scheduling, and automated workflow optimization.",
-                  tech: ["Python", "AI/ML", "API Integration", "Agent Systems", "Next.js", "TypeScript"],
-                  image: "/images/projects/chronologic.png",
-                },
-                {
-                  title: "AI-Powered Email Response System",
-                  description: "An intelligent email response system that uses AI to analyze message intent and generate personalized responses. Features include intent analysis, automated email generation, and seamless integration with email services.",
-                  tech: ["Next.js", "TypeScript", "AI/ML", "Email Integration"],
-                  image: "/images/projects/email-bot.webp",
-                },
-              ].map((project, index) => (
+              {sortedProjects.map((project, index) => (
                 <Card key={index} className="overflow-hidden">
                   <div className="aspect-video relative">
                     <img
@@ -230,7 +355,7 @@ export default function Home() {
                     <h3 className="text-xl font-bold">{project.title}</h3>
                     <p className="text-muted-foreground">{project.description}</p>
                     <div className="flex flex-wrap gap-2">
-                      {project.tech.map((tech, techIndex) => (
+                      {(isMobile ? project.mobileTech : project.tech).map((tech, techIndex) => (
                         <Badge key={techIndex} variant="secondary">
                           {tech}
                         </Badge>
