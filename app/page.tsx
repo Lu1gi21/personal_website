@@ -86,7 +86,7 @@ export default function Home() {
             <div className="flex-1 flex justify-center">
               <div className="relative w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-primary">
                 <img 
-                  src="/images/facepic.jpg" 
+                  src="/images/projects/facepic.webp" 
                   alt="Luis Guillen" 
                   className="object-cover w-full h-full"
                   style={{
