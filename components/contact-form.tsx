@@ -161,14 +161,6 @@ export function ContactForm() {
             {error}
           </div>
         )}
-
-        {response && (
-          <div className="mt-4 p-4 rounded-lg bg-muted">
-            <h3 className="font-semibold mb-2">AI Response:</h3>
-            <p className="text-sm text-muted-foreground">{response.response}</p>
-            <p className="text-xs text-muted-foreground mt-2">Intent: {response.intent}</p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
