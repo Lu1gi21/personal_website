@@ -269,12 +269,6 @@ export default function Home() {
                 </Card>
               ))}
             </div>
-            <div className="flex justify-center pt-8">
-              <Button variant="outline">
-                View All Projects
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </section>
 
