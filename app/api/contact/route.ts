@@ -16,25 +16,33 @@ const ContactState = z.object({
 
 type ContactState = z.infer<typeof ContactState>;
 
-// Initialize the LLM
+// Initialize the LLM with a timeout
 const model = new ChatOpenAI({
-  modelName: "o3-mini-2025-01-31"
+  modelName: "o3-mini-2025-01-31",
+  timeout: 10000, // 10 second timeout
+  maxRetries: 2
 });
 
-// Step 1: Analyze intent
+// Step 1: Analyze intent with timeout
 async function analyzeIntent(message: string): Promise<string> {
-  const prompt = `Analyze the following message and determine its intent. 
-  Is it a job offer, collaboration request, question, or something else?
-  Message: ${message}
-  Respond with just one word: job, collaboration, question, or other.`;
+  try {
+    const prompt = `Analyze the following message and determine its intent. 
+    Is it a job offer, collaboration request, question, or something else?
+    Message: ${message}
+    Respond with just one word: job, collaboration, question, or other.`;
 
-  const response = await model.invoke(prompt);
-  return response.content.toString();
+    const response = await model.invoke(prompt);
+    return response.content.toString();
+  } catch (error) {
+    console.error('Error analyzing intent:', error);
+    return 'other'; // Default fallback
+  }
 }
 
-// Step 2: Generate confirmation email
+// Step 2: Generate confirmation email with timeout
 async function generateConfirmationEmail(state: ContactState): Promise<{ subject: string; html: string }> {
-  const prompt = `You are assisting a just graduated from Computer Science student in crafting a confirmation email to someone who contacted them through their personal website. Your task is to create a warm, professional confirmation email that acknowledges their message and sets the right tone for future communication.
+  try {
+    const prompt = `You are assisting a just graduated from Computer Science student in crafting a confirmation email to someone who contacted them through their personal website. Your task is to create a warm, professional confirmation email that acknowledges their message and sets the right tone for future communication.
 
 PERSONAL INFORMATION:
 - Name: Luis Guillen
@@ -66,18 +74,16 @@ Generate a complete HTML email that includes all necessary HTML tags and styling
   "html": "Your HTML email content here"
 }`;
 
-  const response = await model.invoke(prompt);
-  try {
+    const response = await model.invoke(prompt);
     return JSON.parse(response.content.toString());
   } catch (error) {
-    console.error('Error parsing email content:', error);
+    console.error('Error generating email:', error);
     return {
       subject: 'Thank you for reaching out!',
       html: `
         <h2>Thank you for reaching out!</h2>
         <p>Hi ${state.name},</p>
-        <p>I've received your message and here's my response:</p>
-        <p>${state.response}</p>
+        <p>I've received your message and will get back to you soon.</p>
         <p>Best regards,<br>Luis Guillen</p>
       `
     };
@@ -95,35 +101,45 @@ export async function POST(request: Request) {
       message: body.message,
     });
 
-    // Step 1: Analyze intent
+    // Step 1: Analyze intent with timeout
     const intent = await analyzeIntent(validatedData.message);
     validatedData.intent = intent;
 
-    // Step 2: Generate confirmation email
+    // Step 2: Generate confirmation email with timeout
     const confirmationEmail = await generateConfirmationEmail(validatedData);
 
-    // Step 3: Send notification email to you
-    await resend.emails.send({
-      from: 'Contact Form <onboarding@resend.dev>',
-      to: process.env.YOUR_EMAIL || 'your-email@example.com',
-      subject: `New Contact Form Submission - ${intent}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>From:</strong> ${validatedData.name}</p>
-        <p><strong>Email:</strong> ${validatedData.email}</p>
-        <p><strong>Intent:</strong> ${intent}</p>
-        <p><strong>Message:</strong></p>
-        <p>${validatedData.message}</p>
-      `,
-    });
+    // Step 3: Send notification email to you with timeout
+    await Promise.race([
+      resend.emails.send({
+        from: 'Contact Form <onboarding@resend.dev>',
+        to: process.env.YOUR_EMAIL || 'your-email@example.com',
+        subject: `New Contact Form Submission - ${intent}`,
+        html: `
+          <h2>New Contact Form Submission</h2>
+          <p><strong>From:</strong> ${validatedData.name}</p>
+          <p><strong>Email:</strong> ${validatedData.email}</p>
+          <p><strong>Intent:</strong> ${intent}</p>
+          <p><strong>Message:</strong></p>
+          <p>${validatedData.message}</p>
+        `,
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Email send timeout')), 5000)
+      )
+    ]);
 
-    // Step 4: Send confirmation email to the sender
-    await resend.emails.send({
-      from: 'Luis Guillen <LuisAGuillen@itfocus.tech>',
-      to: validatedData.email,
-      subject: confirmationEmail.subject,
-      html: confirmationEmail.html,
-    });
+    // Step 4: Send confirmation email to the sender with timeout
+    await Promise.race([
+      resend.emails.send({
+        from: 'Luis Guillen <LuisAGuillen@itfocus.tech>',
+        to: validatedData.email,
+        subject: confirmationEmail.subject,
+        html: confirmationEmail.html,
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Email send timeout')), 5000)
+      )
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -132,11 +148,34 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Error processing contact form:', error);
+    
+    // Return appropriate error response based on the error type
+    if (error instanceof Error) {
+      if (error.message.includes('timeout')) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Request timed out. Please try again.',
+            details: error.message
+          },
+          { status: 504 }
+        );
+      }
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Failed to process contact form',
+          details: error.message
+        },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Failed to process contact form',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'An unexpected error occurred',
+        details: 'Unknown error'
       },
       { status: 500 }
     );
