@@ -74,6 +74,7 @@ GENERAL RULES:
 - Let them choose meeting time
 - Make it personal by referencing their message
 - Always include the following contact information in the signature:
+  Name: Luis Guillen
   Email: luigi@guiar.com.mx
   Phone: +1 (817) 659-4871
   LinkedIn: linkedin.com/in/luis-guillen-arc
