@@ -70,10 +70,14 @@ OTHER:
 
 GENERAL RULES:
 - Keep it brief and direct
-- Include contact info for scheduling
 - Professional but friendly tone
 - Let them choose meeting time
 - Make it personal by referencing their message
+- Always include the following contact information in the signature:
+  Email: luigi@guiar.com.mx
+  Phone: +1 (817) 659-4871
+  LinkedIn: linkedin.com/in/luis-guillen-arc
+  GitHub: github.com/Lu1gi21
 
 From: ${state.name}
 Email: ${state.email}
@@ -87,7 +91,20 @@ Generate a complete HTML email that includes all necessary HTML tags and styling
 }`;
 
     const response = await model.invoke(prompt);
-    return JSON.parse(response.content.toString());
+    const emailContent = JSON.parse(response.content.toString());
+    
+    // Add contact information to the email signature
+    emailContent.html = emailContent.html.replace(
+      /Best regards,<br>Luis Guillen/,
+      `Best regards,<br>Luis Guillen<br><br>
+      Contact Information:<br>
+      Email: luigi@guiar.com.mx<br>
+      Phone: +1 (817) 659-4871<br>
+      LinkedIn: <a href="https://www.linkedin.com/in/luis-guillen-arc">linkedin.com/in/luis-guillen-arc</a><br>
+      GitHub: <a href="https://github.com/Lu1gi21">github.com/Lu1gi21</a>`
+    );
+
+    return emailContent;
   } catch (error) {
     console.error('Error generating email:', error);
     return {
@@ -96,7 +113,12 @@ Generate a complete HTML email that includes all necessary HTML tags and styling
         <h2>Thank you for reaching out!</h2>
         <p>Hi ${state.name},</p>
         <p>I've received your message and will get back to you soon.</p>
-        <p>Best regards,<br>Luis Guillen</p>
+        <p>Best regards,<br>Luis Guillen<br><br>
+        Contact Information:<br>
+        Email: luigi@guiar.com.mx<br>
+        Phone: +1 (817) 659-4871<br>
+        LinkedIn: <a href="https://www.linkedin.com/in/luis-guillen-arc">linkedin.com/in/luis-guillen-arc</a><br>
+        GitHub: <a href="https://github.com/Lu1gi21">github.com/Lu1gi21</a></p>
       `
     };
   }
